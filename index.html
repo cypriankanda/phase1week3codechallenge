@@ -4,39 +4,36 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flatadango - Movie Theater</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="container">
-    <header>
-      <h1>Flatadango</h1>
-      <h2>Flatiron Movie Theater</h2>
-    </header>
-    
-    <main>
-      <section class="film-menu">
-        <h3>Available Films</h3>
-        <ul id="films">
-          <!-- Films will be populated here -->
-        </ul>
-      </section>
-      
-      <section class="film-details">
-        <div id="poster">
-          <img src="" alt="Movie Poster">
-        </div>
-        <div id="info">
-          <h2 id="title"></h2>
-          <p id="runtime"></p>
-          <p id="showtime"></p>
-          <p id="tickets-available"></p>
-          <p id="description"></p>
-          <button id="buy-ticket">Buy Ticket</button>
-        </div>
-      </section>
+    <aside class="sidebar">
+      <h2>Movies</h2>
+      <input type="text" id="film-search" placeholder="Search films...">
+      <ul id="films">
+        <li class="film item">Placeholder Film (remove me)</li>
+      </ul>
+    </aside>
+    <main class="movie-details">
+      <div id="loading" class="spinner hidden"></div>
+      <img id="poster" src="" alt="Movie Poster" class="hidden">
+      <h1 id="title"></h1>
+      <p id="description"></p>
+      <p><strong>Runtime:</strong> <span id="runtime"></span> minutes</p>
+      <p><strong>Showtime:</strong> <span id="showtime"></span></p>
+      <p><strong>Available Tickets:</strong> <span id="available-tickets"></span></p>
+      <button type="button" id="buy-ticket">Buy Ticket</button>
     </main>
+    <div id="modal" class="modal hidden">
+      <div class="modal-content">
+        <p id="modal-message"></p>
+        <button type="button" id="modal-confirm">Yes</button>
+        <button type="button" id="modal-cancel">No</button>
+      </div>
+    </div>
+    <div id="notification" class="notification hidden"></div>
   </div>
-  
-  <script src="script.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
