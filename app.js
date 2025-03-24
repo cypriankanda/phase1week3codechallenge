@@ -15,9 +15,6 @@ const modalConfirm = document.getElementById('modal-confirm');
 const modalCancel = document.getElementById('modal-cancel');
 const notification = document.getElementById('notification');
 
-// Base URL for API
-const API_URL = 'http://localhost:3000';
-
 // State
 let currentFilm = null;
 let allFilms = [];
@@ -30,15 +27,15 @@ document.addEventListener('DOMContentLoaded', () => {
 // Fetch all films and display the first one
 function fetchAllFilms() {
   showLoading();
-  fetch(`${API_URL}/films`)
+  fetch('db.json')
     .then(response => response.json())
-    .then(films => {
-      allFilms = films;
+    .then(data => {
+      allFilms = data.films;
       filmsList.innerHTML = '';
-      films.forEach(film => renderFilmInMenu(film));
-      if (films.length > 0) {
-        currentFilm = films[0];
-        displayFilmDetails(films[0]);
+      allFilms.forEach(film => renderFilmInMenu(film));
+      if (allFilms.length > 0) {
+        currentFilm = allFilms[0];
+        displayFilmDetails(allFilms[0]);
       }
       hideLoading();
     })
@@ -48,11 +45,14 @@ function fetchAllFilms() {
 // Fetch a single film by ID
 function fetchFilmById(id) {
   showLoading();
-  fetch(`${API_URL}/films/${id}`)
+  fetch('db.json')
     .then(response => response.json())
-    .then(film => {
-      currentFilm = film;
-      displayFilmDetails(film);
+    .then(data => {
+      const film = data.films.find(f => f.id === id);
+      if (film) {
+        currentFilm = film;
+        displayFilmDetails(film);
+      }
       hideLoading();
     })
     .catch(error => showError('Failed to load film details'));
@@ -114,7 +114,7 @@ buyTicketBtn.addEventListener('click', () => {
   });
 });
 
-// Search functionality
+// Search functionality - new change in my first commit
 filmSearch.addEventListener('input', (e) => {
   const query = e.target.value.toLowerCase();
   filmsList.innerHTML = '';
@@ -126,54 +126,31 @@ filmSearch.addEventListener('input', (e) => {
 // PATCH request to update tickets_sold
 function updateTicketsSold(filmId, ticketsSold) {
   showLoading();
-  fetch(`${API_URL}/films/${filmId}`, {
-    method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ tickets_sold: ticketsSold }),
-  })
-    .then(response => {
-      if (!response.ok) throw new Error('Failed to update tickets');
-      return response.json();
-    })
-    .then(updatedFilm => {
-      currentFilm = { ...currentFilm, ...updatedFilm };
-      updateFilmInMenu(updatedFilm);
-      hideLoading();
-    })
-    .catch(error => showError('Failed to update ticket count'));
+  // Since we're using static data, we'll just update the local state
+  const updatedFilm = { ...currentFilm, tickets_sold: ticketsSold };
+  currentFilm = updatedFilm;
+  updateFilmInMenu(updatedFilm);
+  hideLoading();
 }
 
 // POST request to add a new ticket
 function postNewTicket(filmId, numberOfTickets) {
-  fetch(`${API_URL}/tickets`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ film_id: filmId, number_of_tickets: numberOfTickets }),
-  })
-    .then(response => {
-      if (!response.ok) throw new Error('Failed to post ticket');
-      return response.json();
-    })
-    .then(ticket => console.log('Ticket added:', ticket))
-    .catch(error => showError('Failed to add ticket'));
+  // Since we're using static data, we'll just log the ticket purchase
+  console.log('Ticket added:', { film_id: filmId, number_of_tickets: numberOfTickets });
 }
 
 // DELETE request to remove a film
 function deleteFilm(filmId, liElement) {
   showLoading();
-  fetch(`${API_URL}/films/${filmId}`, { method: 'DELETE' })
-    .then(response => {
-      if (!response.ok) throw new Error('Failed to delete film');
-      liElement.remove();
-      allFilms = allFilms.filter(f => f.id !== filmId);
-      if (currentFilm && currentFilm.id === filmId) {
-        currentFilm = allFilms[0] || null;
-        currentFilm ? displayFilmDetails(currentFilm) : clearFilmDetails();
-      }
-      hideLoading();
-      showNotification('Film deleted successfully!');
-    })
-    .catch(error => showError('Failed to delete film'));
+  // Since we're using static data, we'll just update the local state
+  liElement.remove();
+  allFilms = allFilms.filter(f => f.id !== filmId);
+  if (currentFilm && currentFilm.id === filmId) {
+    currentFilm = allFilms[0] || null;
+    currentFilm ? displayFilmDetails(currentFilm) : clearFilmDetails();
+  }
+  hideLoading();
+  showNotification('Film deleted successfully!');
 }
 
 // Update film in the menu
